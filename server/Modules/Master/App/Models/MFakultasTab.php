@@ -13,10 +13,13 @@ class MFakultasTab extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'code',
+        'title'
+    ];
     
-    protected static function newFactory(): MFakultasTabFactory
+    protected static function newFactory()
     {
-        //return MFakultasTabFactory::new();
+        return MFakultasTabFactory::new();
     }
 }

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('m_fakultas_tabs', function (Blueprint $table) {
             $table->id();
-            
-            $table->timestamps();
+            $table->char('code',15);
+            $table->char('title', 50);
         });
     }
 

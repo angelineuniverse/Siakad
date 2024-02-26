@@ -21,12 +21,12 @@ class UsersTab extends Authenticatable
         'password',
         'avatar',
         'nim',
-        'birthday',
         'code',
-        'm_gender_tabs_id',
         'active',
         'deleted',
     ];
+    // users_tab
+    // users_detail_tab
 
     protected $hidden = ['password'];
     

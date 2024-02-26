@@ -13,7 +13,3 @@ use Modules\Master\App\Http\Controllers\MasterController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::group([], function () {
-    Route::resource('master', MasterController::class)->names('master');
-});

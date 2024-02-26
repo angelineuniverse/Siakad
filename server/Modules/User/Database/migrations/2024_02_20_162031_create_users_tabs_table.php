@@ -17,19 +17,22 @@ return new class extends Migration
             $table->char('name',50);
             $table->string('password');
             $table->string('avatar')->nullable();
-            $table->char('nim',50)->unique();
-            $table->date('birthday');
+            $table->char('nim',50)->nullable()->unique();
             $table->char('code',15)->unique();
-            $table->unsignedTinyInteger('m_gender_tabs_id')->nullable();
+            $table->tinyInteger('status_adm')->default(0)->comment("0: not done, 1: done");
             $table->tinyInteger('active')->default(0)->comment("0: not active, 1: active");
             $table->tinyInteger('deleted')->default(0)->comment("0: not deleted, 1: deleted");
             $table->timestamps();
-            $table->foreign('m_gender_tabs_id')->references('id')->on('m_gender_tabs')->nullOnDelete();
         });
     }
 
     /**
      * Reverse the migrations.
+     * 1 . Create Account User
+     * 
+     * 2 . Detail User
+     *  - Jurusan nya apa ?
+     *  - Menggenerate NIM by Jurusan
      */
     public function down(): void
     {

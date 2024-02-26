@@ -4,9 +4,11 @@ namespace Modules\User\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Modules\Master\App\Models\MGenerateCodeTab;
+use Modules\Master\App\Models\MGenerateNimTab;
 use Modules\User\App\Models\UsersTab;
 
 class UserController extends Controller
@@ -14,13 +16,38 @@ class UserController extends Controller
     protected $usersTab;
     protected $controller;
     protected $mGenerateCodeTab;
+    protected $mGenerateNimTab;
     public function __construct(
         UsersTab $user, Controller $controller,
-        MGenerateCodeTab $mGenerateCodeTab
+        MGenerateCodeTab $mGenerateCodeTab,
+        MGenerateNimTab $mGenerateNimTab
     ) {
         $this->usersTab = $user;
         $this->mGenerateCodeTab = $mGenerateCodeTab;
+        $this->mGenerateNimTab = $mGenerateNimTab;
         $this->controller = $controller;
+    }
+
+    public function login(Request $request){
+        $this->controller->validasi($request,[
+            'email' => 'required|exists:users_tabs,email',
+            'password' => 'required|min:6',
+        ]);
+
+        if(!Auth::attempt($request->only('email','password'))){
+            abort(400, "Mohon maaf akun anda tidak ditemukan");
+        }
+        try {
+            $users = $this->usersTab->where('email', $request->email)
+                    ->where('deleted','=',0)
+                    ->first();
+            $token = $users->createToken('siakad')->plainTextToken;
+            return $this->controller->responses('USERS FIND', 200, [
+                'token' => $token
+            ],null);
+        } catch (\Throwable $th) {
+            abort(401,$th->getMessage());
+        }
     }
     
     public function register(Request $request){
@@ -28,8 +55,6 @@ class UserController extends Controller
             'email' => 'required|email|unique:users_tabs,email',
             'name' => 'required',
             'password' => 'required|min:6',
-            'nim' => 'required|unique:users_tabs,nim',
-            'birthday' => 'required',
         ]);
 
         try {
@@ -51,7 +76,7 @@ class UserController extends Controller
             );
         } catch (\Throwable $th) {
             DB::rollBack(); // tarik kembali data
-            abort(500, $th->getMessage());
+            abort(400, $th->getMessage());
         }
     }
     /**
@@ -59,7 +84,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return response()->json(auth()->user());
+        return $this->controller->responses('USERS ALL',200,$this->usersTab->all(),null);
     }
 
     /**
@@ -83,7 +108,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return view('user::show');
+        return $this->controller->responses("USERS DETAIL",200,auth()->user(),null);
     }
 
     /**
@@ -99,7 +124,23 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->controller->validasi($request,[
+            'email' => 'required|exists:users_tabs,email'
+        ]);
+
+
+        try {
+            DB::beginTransaction();
+            if(isset($request->password)){ // mengecek apakah key/nilai nya ada ?
+                $request['password'] = Hash::make($request->password);
+            }
+            $users = $this->usersTab->where('id', auth()->user()->id)->update($request->all());
+            DB::commit();
+            return $this->controller->responses('USERS UPDATE', 200, $users,null);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
     }
 
     /**
@@ -107,6 +148,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        auth()->user()->currentAccessToken()->delete();
+        return $this->controller->responses('USERS LOGOUT',200,true,null);
     }
 }

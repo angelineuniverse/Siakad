@@ -13,14 +13,14 @@ use Modules\Master\App\Models\MJurusanTab;
 class JurusanController extends Controller
 {
 
-    protected $jurusan;
+    protected $mJurusanTab;
     protected $controller;
     protected $mGenerateCodeTab;
     public function __construct(
         MJurusanTab $mJurusanTab, 
         MGenerateCodeTab $mGenerateCodeTab,
         Controller $controller) {
-        $this->jurusan = $mJurusanTab;
+        $this->mJurusanTab = $mJurusanTab;
         $this->mGenerateCodeTab = $mGenerateCodeTab;
         $this->controller = $controller;
     }
@@ -30,7 +30,7 @@ class JurusanController extends Controller
      */
     public function index()
     {
-        return $this->controller->responses('JURUSAN ALL',200, $this->jurusan->all(),null);
+        return $this->controller->responses('JURUSAN ALL',200, $this->mJurusanTab->all(),null);
     }
 
     /**
@@ -52,10 +52,19 @@ class JurusanController extends Controller
 
         try {
             DB::beginTransaction();
-            $request['code'] = $this->mGenerateCodeTab->generateCode('JSN');
-            $this->jurusan->create($request->all());
+            $request['code'] = $this->mGenerateCodeTab->generateCode('JRS');
+            $jurusan = $this->mJurusanTab->create($request->all());
             DB::commit();
-            return $this->controller->responses('JURUSAN ADD',200, null,null);
+            return $this->controller->responses(
+                'JURUSAN CREATE',
+                200,
+                $jurusan,
+                [
+                    'type' => 'success',
+                    'title' => 'Jurusan Created Success',
+                    'message' => 'New Jurusan succesfully created',
+                ]
+            );
         } catch (\Throwable $th) {
             DB::rollBack();
             abort(400, $th->getMessage());
@@ -83,7 +92,27 @@ class JurusanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->controller->validasi($request,[
+            'title' => 'required'
+        ]);
+        try {
+            DB::beginTransaction();
+            $jurusan =  $this->mJurusanTab->where('id',$id)->update($request->all());
+            DB::commit();
+            return $this->controller->responses(
+                'JURUSAN UPDATED',
+                200,
+                $jurusan,
+                [
+                    'type' => 'success',
+                    'title' => 'Jurusan Updated Success',
+                    'message' => 'New Jurusan succesfully Updated',
+                ]
+            );
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
     }
 
     /**
@@ -91,6 +120,24 @@ class JurusanController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $jurusan = $this->mJurusanTab->find($id);
+        try {
+            DB::beginTransaction();
+            $jurusan->delete();
+            DB::commit();
+            return $this->controller->responses(
+                "JURUSAN DELETE",
+                200,
+                $jurusan,
+                [
+                    'type' => 'success',
+                    'title' => 'Jurusan Delete Success',
+                    'message' => 'New Jurusan succesfully deleted',
+                ]
+            );
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
     }
 }

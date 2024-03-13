@@ -15,7 +15,7 @@ return new class extends Migration
             $table->char('serial',3);
             $table->char('prefix',3);
             $table->tinyInteger('start')->default(1);
-            $table->tinyInteger('length',3);
+            $table->tinyInteger('length');
             $table->integer('years');
             $table->string('description');
         });

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Master\App\Http\Controllers\FakultasController;
 use Modules\Master\App\Http\Controllers\JurusanController;
 
 /*
@@ -15,6 +16,7 @@ use Modules\Master\App\Http\Controllers\JurusanController;
     |
 */
 
-Route::resource('jurusan', JurusanController::class);
+Route::resource('v1/jurusan', JurusanController::class);
+Route::resource('v1/fakultas', FakultasController::class);
 // Route::middleware(['auth:sanctum'])->prefix('v1')->name('api.')->group(function () {
 // });

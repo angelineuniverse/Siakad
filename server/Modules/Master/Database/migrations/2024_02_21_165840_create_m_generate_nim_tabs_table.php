@@ -12,23 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('m_generate_nim_tabs', function (Blueprint $table) {
-            $table->char('m_jurusan_tabs_id', 3); // ID Jurusan
-            $table->char('fakultas',2); // 33,22,11
-            $table->char('jurusan',2); // 01,02,03
-            $table->tinyInteger('start')->default(1); // 1
-            $table->char('length',4); // 0001
-            $table->integer('years'); // 24
-            $table->string('description'); // Penggunaan Code
+            $table->char('fakultas',2);
+            $table->char('jurusan',2);
+            $table->tinyInteger('start')->default(1);
+            $table->char('length',4);
+            $table->integer('years');
+            $table->string('description');
         });
     }
 
     /**
      * Reverse the migrations. 3302240001
-     * 11 => Keuangan
-     * 33 => Teknik
-     * 02 => Elektro
-     * years
-     * urut
      */
     public function down(): void
     {

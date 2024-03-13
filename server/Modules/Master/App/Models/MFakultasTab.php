@@ -13,6 +13,7 @@ class MFakultasTab extends Model
     /**
      * The attributes that are mass assignable.
      */
+    public $timestamps = false;
     protected $fillable = [
         'code',
         'title'

@@ -13,11 +13,10 @@ class MGenerateNimTab extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $primaryKey = 'm_jurusan_tabs_id';
+    protected $primaryKey = 'jurusan';
     public $timestamps = false;
     public $incementing = false;
     protected $fillable = [
-        'm_jurusan_tabs_id',
         'fakultas',
         'jurusan',
         'start',
@@ -31,8 +30,8 @@ class MGenerateNimTab extends Model
         return MGenerateNimTabFactory::new();
     }
 
-    public function generateCode($m_jurusan_tabs_id){
-        $serial = self::find($m_jurusan_tabs_id);
+    public function generateCode($jurusan){
+        $serial = self::find($jurusan);
         if($serial->years != date('y')){
             $serial->update([
                 'years' => date('y'),

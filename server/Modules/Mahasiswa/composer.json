@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/mahasiswa",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Mahasiswa\\": "app/",
+            "Modules\\Mahasiswa\\Database\\Factories\\": "database/factories/",
+            "Modules\\Mahasiswa\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Mahasiswa\\Tests\\": "tests/"
+        }
+    }
+}

@@ -7,8 +7,10 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+        <p className=" text-red-600">
+          Edit <code>src/App.tsx</code> and save to reload.{" "}
+          <span>before custom</span>{" "}
+          <span className="font-interregular">after custom</span>
         </p>
         <a
           className="App-link"

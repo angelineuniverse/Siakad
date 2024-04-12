@@ -86,7 +86,7 @@ class AdminController extends Controller
             }
             $user = $this->tAdminTab->where('email', $request->email)->first();
             $token = $user->createToken('4ngel1n3',['admin'])->plainTextToken;
-            return $this->controller->respons("User Created", [
+            return $this->controller->respons("User Login", [
                 'token' => $token
             ]);
         } catch (\Throwable $th) {

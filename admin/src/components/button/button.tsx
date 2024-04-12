@@ -32,7 +32,7 @@ class Button extends Component<ModelButton> {
           onClick={this.props.onClick}
           className={clsx(
             "font-intersemibold rounded-lg",
-            "flex justify-center",
+            "flex justify-center items-center",
             widthButton[this.props.width],
             sizeButton[this.props.size],
             theme[this.props.theme]

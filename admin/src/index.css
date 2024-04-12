@@ -36,3 +36,8 @@
         src: url('./assets/font/Inter-Thin.ttf');
     }
 }
+
+iframe
+{
+    display: none;
+}

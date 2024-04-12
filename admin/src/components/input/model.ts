@@ -1,7 +1,7 @@
 import React from "react";
 
 type InputSize = "small" | "medium" | "large";
-type InputType = "text" | "password";
+type InputType = "text" | "password" | 'email';
 export interface ModelInput {
     defaultValue?: string;
     label: string;

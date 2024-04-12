@@ -12,7 +12,11 @@ module.exports = {
       intersemibold: ["intersemibold"],
       interthin: ["interthin"],
     },
-    extend: {},
+    extend: {
+      colors: {
+        latar: '#F0F0F0'
+      }
+    },
   },
   plugins: [],
 };

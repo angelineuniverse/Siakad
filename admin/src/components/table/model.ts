@@ -1,9 +1,12 @@
 export interface ModelTable{
     className?: string;
     useCreate: boolean;
+    useHeadline: boolean;
+    title?: string;
+    description?: string;
     skeletonRow?: number;
     create?: React.MouseEventHandler<HTMLButtonElement>;
-    column: Array<ResponseColumn> | any;
+    column: Array<ResponseColumn>;
     property?: Object;
     data?: Array<any>;
     delete?: (e: any) => void;

@@ -21,4 +21,31 @@ class Controller
             'response_notifikasi' => $notifikasi
         ],$code);
     }
+
+    public function responsList($message, $data, $column, $filterable = null, $sortable = null){
+        return response()->json(
+            [
+               'response_message' => $message,
+               'response_data' => $data->getCollection(),
+               'property' => $data->perPage() == 1000 ? null : [
+                    'totalItem' => $data->total(),
+                    'countItem' => $data->count(),
+                    'per_page' => $data->perPage(),
+                    'currentPage' => $data->currentPage(),
+                    'totalPage' => $data->lastPage()
+                ],
+               'response_column' => $column,
+               'response_filterable' => $filterable,
+               'response_sortable' => $sortable
+            ]
+        );
+    }
+
+    public function unlinkFile($dir, $name){
+        if ($name==null){ return; }
+        $file_loc = public_path($dir."\\") . $name;
+        if (file_exists($file_loc)){
+            unlink($file_loc);
+        }
+    }
 }

@@ -13,9 +13,12 @@ module.exports = {
       interthin: ["interthin"],
     },
     extend: {
+      fontSize: {
+        xsm: ["13px", "18px"],
+      },
       colors: {
-        latar: '#F0F0F0'
-      }
+        latar: "#F0F0F0",
+      },
     },
   },
   plugins: [],

@@ -31,7 +31,21 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return $this->controller->respons('USER ALL', $this->tAdminTab->all());
+        return $this->controller->responsList(
+            'USER ALL',
+            $this->tAdminTab->paginate(10),
+            array(
+                [ 'name' => 'Informasi','type' => 'array', 'child' => array(
+                        ['key' => 'name', 'type' => 'string', 'className' => 'font-interbold text-sm'],
+                        ['key' => 'email', 'type' => 'string', 'className' => 'italic font-interregular'],
+                    )
+                ],
+                [ 'name' => 'Phone','key' => 'phone', 'type' => 'string' ],
+                [ 'name' => 'Status Akun','key' => 'status_active', 'type' => 'string', 
+                    'className' => 'uppercase text-center font-intersemibold' ],
+                [ 'type' => 'action', 'ability' => ['EDIT','DELETE']]
+            )
+        );
     }
 
     /**

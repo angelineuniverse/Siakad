@@ -2,7 +2,7 @@ import { Component, ReactNode } from "react";
 import logo from "../../assets/image/Logo Fatahilah.png";
 import Input from "../../components/input/input";
 import Button from "../../components/button/button";
-import client from "../../service";
+import client from "../../service/service";
 import { setCookie } from "typescript-cookie";
 import { RouterInterface, withRouter } from "../../router/router_component";
 class Auth extends Component<RouterInterface> {
@@ -24,7 +24,7 @@ class Auth extends Component<RouterInterface> {
   login() {
     this.setState({ loading: true });
     client
-      .post("/admin:login", {
+      .post("v1/admin:login", {
         email: this.state.email,
         password: this.state.password,
       })

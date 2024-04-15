@@ -17,9 +17,14 @@ class TAdminTab extends Authenticatable
      */
     protected $fillable = ['name','email','password','phone'];
     protected $hidden = ['password'];
+    protected $appends = ['status_active'];
     
     protected static function newFactory()
     {
         return TAdminTabFactory::new();
+    }
+
+    public function getStatusActiveAttribute(){
+        return $this->active ? 'active' : 'inactive';
     }
 }

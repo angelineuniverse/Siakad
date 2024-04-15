@@ -11,21 +11,31 @@ class Table extends Component<ModelTable> {
     return (
       <div>
         <div className={clsx("block", this.props.className)}>
-          {this.props.useCreate && (
-            <div className="flex justify-end mt-1">
+          <div className="flex justify-end items-center w-full">
+            {this.props.useHeadline && (
+              <div className="block mr-auto">
+                <h1 className=" font-interbold text-lg">
+                  {this.props?.title ?? "Table Headline"}
+                </h1>
+                <p className=" font-interregular text-xs">
+                  {this.props?.description ?? "Lihat semua informasi"}
+                </p>
+              </div>
+            )}
+            {this.props.useCreate && (
               <Button
                 title="Buat Baru"
                 theme="primary"
-                size="small"
+                size="extrasmall"
                 width="block"
                 onClick={this.props.create}
               />
-            </div>
-          )}
+            )}
+          </div>
           <div className="overflow-hidden border border-gray-300 md:rounded-lg mt-3">
             <table className="w-full min-w-full divide-y divide-gray-200">
               <thead className=" font-interbold bg-gradient-to-b from-gray-100 to-gray-100">
-                {!this.props.column && (
+                {this.props.column.length < 1 && (
                   <tr>
                     <th className="py-3 text-center px-4">
                       <Skeleton type="text" />
@@ -41,15 +51,15 @@ class Table extends Component<ModelTable> {
                     </th>
                   </tr>
                 )}
-                {this.props.column && (
+                {this.props.column.length > 0 && (
                   <tr className=" uppercase">
-                    <th className="py-3 text-center text-xsm px-4">No</th>
+                    <th className="py-3 text-center text-xs px-4">No</th>
                     {this.props.column?.map((e: any) => {
                       return (
                         <th
                           key={e.name + "-" + e.type}
                           className={clsx(
-                            "py-3 text-xsm px-4",
+                            "py-3 text-xs px-4",
                             e.type === "action" || e.type === "status"
                               ? "text-center"
                               : "text-start",
@@ -64,10 +74,10 @@ class Table extends Component<ModelTable> {
                 )}
               </thead>
               <tbody>
-                {!this.props.column &&
+                {this.props.column.length < 1 &&
                   [...Array(this.props.skeletonRow ?? 4)].map((row, index) => {
                     return (
-                      <Suspense key={index}>
+                      <Suspense key={index + "key"}>
                         <tr>
                           <td className="py-3 text-center px-4">
                             <Skeleton type="random" />
@@ -88,7 +98,7 @@ class Table extends Component<ModelTable> {
                 {this.props.data?.map((row, index) => {
                   return (
                     <tr key={"item-" + (row.id ?? index + 1)}>
-                      <td className="py-3 text-xsm text-center font-intersemibold px-4">
+                      <td className="py-3 text-xs text-center font-intersemibold px-4">
                         {index + 1}
                       </td>
                       {this.props.column?.map((col: ResponseColumn) => {
@@ -96,8 +106,7 @@ class Table extends Component<ModelTable> {
                           <td
                             key={`item-row-${col.type}-${col.key}-${index + 1}`}
                             className={clsx(
-                              "py-3 text-xsm text-start font-interregular px-4",
-                              col.className
+                              "py-3 text-xs text-start font-interregular px-4"
                             )}
                           >
                             {col.type === "array" && (
@@ -254,7 +263,9 @@ class Table extends Component<ModelTable> {
                               </span>
                             )}
                             {col.type === "string" && (
-                              <span>{get(row, col.key)}</span>
+                              <span className={col.className}>
+                                {get(row, col.key) ?? "-"}
+                              </span>
                             )}
                             {col.type === "status" && (
                               <p className="text-center">

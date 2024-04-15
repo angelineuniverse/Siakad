@@ -1,9 +1,9 @@
 import axios from "axios";
 import { getCookie } from "typescript-cookie";
 import { redirect } from "react-router-dom";
-import { notification } from "./components/notification/notificationService";
+import { notification } from "../components/notification/notificationService";
 const client = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: 'http://localhost:8000/api/v1/',
     headers: {
         Authorization: `Bearer ${getCookie('token')}`
     }

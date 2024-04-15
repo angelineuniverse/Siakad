@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Master\Http\Controllers\MasterController;
+use Modules\Master\Http\Controllers\MenuController;
 
 /*
  *--------------------------------------------------------------------------
@@ -15,5 +16,13 @@ use Modules\Master\Http\Controllers\MasterController;
 */
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('master', MasterController::class)->names('master');
+    Route::prefix('menu')->group(function(){
+        Route::get('', [MenuController::class,'index']);
+        Route::post('', [MenuController::class,'store']);
+        Route::get('create', [MenuController::class,'create']);
+        Route::get('{id}', [MenuController::class,'show']);
+        Route::post('{id}', [MenuController::class,'update']);
+        Route::delete('{id}', [MenuController::class,'destroy']);
+        Route::get('{id}/edit', [MenuController::class,'edit']);
+    });
 });

@@ -28,6 +28,7 @@ class Table extends Component<ModelTable> {
                 theme="primary"
                 size="extrasmall"
                 width="block"
+                isLoading={this.props.loadingCreate}
                 onClick={this.props.create}
               />
             )}

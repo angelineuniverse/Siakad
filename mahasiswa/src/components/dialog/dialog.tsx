@@ -31,8 +31,13 @@ class Dialog extends Component<ModelDialog> {
             )}
           >
             <div
+              className="h-screen w-full absolute z-10"
+              aria-hidden="true"
+              onClick={this.props.onClose}
+            ></div>
+            <div
               className={clsx(
-                "dialog border border-gray-100 shadow-2xl rounded-xl bg-white h-fit",
+                "dialog border z-20 border-gray-100 shadow-2xl rounded-xl bg-white h-fit",
                 SizeDialog[this.props.size ?? "custom"],
                 this.props.useHeading ? "py-5" : "p-5",
                 this.props.className

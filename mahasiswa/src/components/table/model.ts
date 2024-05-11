@@ -6,6 +6,7 @@ export interface ModelTable{
     description?: string;
     skeletonRow?: number;
     create?: React.MouseEventHandler<HTMLButtonElement>;
+    loadingCreate?: boolean;
     column: Array<ResponseColumn>;
     property?: Object;
     data?: Array<any>;

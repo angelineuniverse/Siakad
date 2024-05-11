@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Master\Http\Controllers\MasterController;
 use Modules\Master\Http\Controllers\MenuController;
+use Modules\Master\Http\Controllers\RoleController;
 
 /*
  *--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use Modules\Master\Http\Controllers\MenuController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('v1')->group(function () {
     Route::prefix('menu')->group(function(){
         Route::get('', [MenuController::class,'index']);
         Route::post('', [MenuController::class,'store']);
@@ -25,4 +26,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         Route::delete('{id}', [MenuController::class,'destroy']);
         Route::get('{id}/edit', [MenuController::class,'edit']);
     });
+    Route::resources('role',[RoleController::class]);
 });

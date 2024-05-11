@@ -41,6 +41,7 @@ class AdminController extends Controller
                     )
                 ],
                 [ 'name' => 'Phone','key' => 'phone', 'type' => 'string' ],
+                [ 'name' => 'Role','key' => 'role', 'type' => 'string' ],
                 [ 'name' => 'Status Akun','key' => 'status_active', 'type' => 'string', 
                     'className' => 'uppercase text-center font-intersemibold' ],
                 [ 'type' => 'action', 'ability' => ['EDIT','DELETE']]
@@ -53,7 +54,21 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return view('admin::create');
+        return $this->controller->respons(
+            'FORM CREATE',
+            array(
+                [ 'key' => 'name', 'name' => null, 'type' => 'text','label' => 'Nama' ],
+                [ 'key' => 'email', 'email' => null, 'type' => 'text', 'label' => 'Email' ],
+                [ 'key' => 'password', 'password' => null, 'type' => 'password', 'label' => 'Password' ],
+                [ 'key' => 'm_role_tab_id', 'm_role_tab_id' => null, 'type' => 'select', 'label' => 'Role',
+                    'list' => [
+                        'options' => '',
+                        'keyValue' => 'id',
+                        'keyoption' => 'name'
+                    ]
+                ]
+            )
+        );
     }
 
     /**

@@ -24,7 +24,7 @@ class Auth extends Component<RouterInterface> {
   login() {
     this.setState({ loading: true });
     client
-      .post("v1/admin:login", {
+      .post("admin:login", {
         email: this.state.email,
         password: this.state.password,
       })

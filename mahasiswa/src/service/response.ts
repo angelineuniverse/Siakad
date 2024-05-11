@@ -8,3 +8,9 @@ export interface ModelResponList {
     response_sortable: any;
     response_message: string;
 }
+
+export interface ModelRespon {
+    response_data: any;
+    response_notifikasi: any;
+    response_message: string;
+}

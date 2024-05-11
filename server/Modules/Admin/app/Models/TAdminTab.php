@@ -7,6 +7,7 @@ use Modules\Admin\Database\factories\TAdminTabFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Master\Models\MRoleTab;
 
 class TAdminTab extends Authenticatable
 {
@@ -15,16 +16,23 @@ class TAdminTab extends Authenticatable
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['name','email','password','phone'];
+    protected $fillable = ['name','email','password','phone', 'm_role_tab_id','active','avatar'];
     protected $hidden = ['password'];
-    protected $appends = ['status_active'];
+    protected $appends = ['status_active','role'];
     
     protected static function newFactory()
     {
         return TAdminTabFactory::new();
     }
 
+    public function getRoleAttribute(){
+        return $this->roletab->title ?? 'Belum Diatur';
+    }
     public function getStatusActiveAttribute(){
         return $this->active ? 'active' : 'inactive';
+    }
+    
+    public function roletab(){
+        return $this->hasOne(MRoleTab::class, 'id', 'm_role_tab_id');
     }
 }

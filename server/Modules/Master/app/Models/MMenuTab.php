@@ -38,6 +38,6 @@ class MMenuTab extends Model
     }
 
     public function child(){
-        return $this->hasMany(MMenuTab::class,'parent_id','id');
+        return $this->hasMany(MMenuTab::class,'parent_id','id')->orderBy('order','asc');
     }
 }

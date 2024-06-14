@@ -18,5 +18,6 @@ Route::post('v1/admin:login',[AdminController::class,'login']);
 Route::post('v1/admin:register',[AdminController::class,'store']);
 Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('v1')->group(function(){
     Route::resource('admin', AdminController::class);
+    Route::post('admin/{id}/update',[AdminController::class,'update']);
     Route::get('admin:aktivasi',[AdminController::class,'activatedAccount']);
 });

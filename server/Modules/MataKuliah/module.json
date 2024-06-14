@@ -1,0 +1,11 @@
+{
+    "name": "MataKuliah",
+    "alias": "matakuliah",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\MataKuliah\\Providers\\MataKuliahServiceProvider"
+    ],
+    "files": []
+}

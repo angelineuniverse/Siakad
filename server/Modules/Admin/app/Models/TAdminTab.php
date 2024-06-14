@@ -18,7 +18,7 @@ class TAdminTab extends Authenticatable
      */
     protected $fillable = ['name','email','password','phone', 'm_role_tab_id','active','avatar'];
     protected $hidden = ['password'];
-    protected $appends = ['status_active','role'];
+    protected $appends = ['role'];
     
     protected static function newFactory()
     {
@@ -27,9 +27,6 @@ class TAdminTab extends Authenticatable
 
     public function getRoleAttribute(){
         return $this->roletab->title ?? 'Belum Diatur';
-    }
-    public function getStatusActiveAttribute(){
-        return $this->active ? 'active' : 'inactive';
     }
     
     public function roletab(){

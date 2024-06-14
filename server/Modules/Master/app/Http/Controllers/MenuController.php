@@ -35,9 +35,6 @@ class MenuController extends Controller
             ->with('child')
             ->orderBy('order','asc')
             ->get();
-        // foreach ($menu as $value) {
-        //     $value['icon'] = env('APP_URL') . 'icon/' . $value['icon'];
-        // }
         return $this->controller->respons('MENU ALL', $menu);
     }
 

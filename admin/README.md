@@ -1,61 +1,46 @@
-# admin
+# Getting Started with Create React App
 
-This template should help get you started developing with Vue 3 in Vite.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Recommended IDE Setup
+## Available Scripts
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+In the project directory, you can run:
 
-## Type Support for `.vue` Imports in TS
+### `npm start`
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Customize configuration
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### `npm test`
 
-## Project Setup
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-```sh
-npm install
-```
+### `npm run build`
 
-### Compile and Hot-Reload for Development
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-```sh
-npm run dev
-```
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-### Type-Check, Compile and Minify for Production
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-```sh
-npm run build
-```
+### `npm run eject`
 
-### Run Headed Component Tests with [Cypress Component Testing](https://on.cypress.io/component)
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-```sh
-npm run test:unit:dev # or `npm run test:unit` for headless testing
-```
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-```sh
-npm run test:e2e:dev
-```
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+## Learn More
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-```sh
-npm run build
-npm run test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+To learn React, check out the [React documentation](https://reactjs.org/).

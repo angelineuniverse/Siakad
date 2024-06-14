@@ -15,6 +15,7 @@ return new class extends Migration
             $table->tinyIncrements('id');
             $table->char('code',11);
             $table->char('title');
+            $table->tinyInteger('active');
         });
     }
 

@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/krs",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Krs\\": "app/",
+            "Modules\\Krs\\Database\\Factories\\": "database/factories/",
+            "Modules\\Krs\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Krs\\Tests\\": "tests/"
+        }
+    }
+}

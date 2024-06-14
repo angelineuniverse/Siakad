@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Master\Http\Controllers\FakultasController;
+use Modules\Master\Http\Controllers\JurusanController;
 use Modules\Master\Http\Controllers\MasterController;
 use Modules\Master\Http\Controllers\MenuController;
 use Modules\Master\Http\Controllers\RoleController;
@@ -26,5 +28,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('v1')->group(functi
         Route::delete('{id}', [MenuController::class,'destroy']);
         Route::get('{id}/edit', [MenuController::class,'edit']);
     });
-    Route::resources('role',[RoleController::class]);
+    Route::resource('role',RoleController::class);
+    Route::resource('fakultas',FakultasController::class);
+    Route::resource('jurusan',JurusanController::class);
 });

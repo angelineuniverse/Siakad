@@ -13,10 +13,15 @@ class MJurusanTab extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    public $timestamps = false;
+    protected $fillable = [
+        'code',
+        'title',
+        'active'
+    ];
     
-    protected static function newFactory(): MJurusanTabFactory
+    protected static function newFactory()
     {
-        //return MJurusanTabFactory::new();
+        //class factory
     }
 }

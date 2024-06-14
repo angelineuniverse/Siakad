@@ -14,15 +14,27 @@ return new class extends Migration
         Schema::create('t_mahasiswa_detail_tabs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('t_mahasiswa_tabs_id');
-            $table->char('old_school',30);
+            $table->char('birthday_city');
+            $table->date('birthday_date');
+            $table->char('no_nik');
+            $table->char('no_kk');
+            $table->char('old_school',30)->nullable();
             $table->char('phone');
-            $table->unsignedTinyInteger('m_gender_tabs_id');
+            $table->unsignedTinyInteger('m_gender_tabs_id')->nullable();
             $table->unsignedTinyInteger('m_blood_tabs_id')->nullable();
-            $table->unsignedTinyInteger('m_married_tabs_id');
-            $table->unsignedTinyInteger('m_religion_tabs_id');
-            $table->unsignedTinyInteger('m_city_tabs_id');
-            $table->unsignedTinyInteger('m_province_tabs_id');
+            $table->unsignedTinyInteger('m_married_tabs_id')->nullable();
+            $table->unsignedTinyInteger('m_religion_tabs_id')->nullable();
+            $table->unsignedInteger('m_city_tabs_id')->nullable();
+            $table->unsignedInteger('m_province_tabs_id')->nullable();
             $table->string('address');
+            $table->foreign('m_blood_tabs_id')->references('id')->on('m_blood_tabs')->nullOnDelete();
+            $table->foreign('t_mahasiswa_tabs_id')->references('id')->on('t_mahasiswa_tabs')->cascadeOnDelete();
+            $table->foreign('m_gender_tabs_id')->references('id')->on('m_gender_tabs')->nullOnDelete();
+            $table->foreign('m_married_tabs_id')->references('id')->on('m_married_tabs')->nullOnDelete();
+            $table->foreign('m_religion_tabs_id')->references('id')->on('m_religion_tabs')->nullOnDelete();
+            $table->foreign('m_city_tabs_id')->references('id')->on('m_city_tabs')->nullOnDelete();
+            $table->foreign('m_province_tabs_id')->references('id')->on('m_province_tabs')->nullOnDelete();
+
         });
     }
 

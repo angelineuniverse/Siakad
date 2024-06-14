@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Mahasiswa\Http\Controllers\MahasiswaController;
+use Modules\Mahasiswa\Http\Controllers\MahasiswaPeriodeController;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +15,13 @@ use Modules\Mahasiswa\Http\Controllers\MahasiswaController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('mahasiswa', MahasiswaController::class)->names('mahasiswa');
+Route::middleware(['auth:sanctum','ability:admin'])->prefix('v1')->group(function () {
+    Route::resource('mahasiswa-periode', MahasiswaPeriodeController::class);
+    Route::post('mahasiswa-periode/{id}/update', [MahasiswaPeriodeController::class,'update']);
+    Route::post('mahasiswa/{id}/update', [MahasiswaController::class,'update']);
+    Route::resource('mahasiswa', MahasiswaController::class);
+    Route::get('mahasiswa/search/find', [MahasiswaController::class,'searching']);
+});
+Route::middleware(['auth:sanctum','ability:mahasiswa'])->prefix('v1')->group(function () {
+    Route::post('mahasiswa/login',[MahasiswaController::class,'login']);
 });

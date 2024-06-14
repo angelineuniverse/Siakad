@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class Controller
@@ -48,4 +49,13 @@ class Controller
             unlink($file_loc);
         }
     }
+
+    public function download(Request $request){
+        $files = public_path($request->folder).'/'. $request->filename;
+        if (file_exists($files)){
+            return response()->download($files);
+        }
+        return response('',404);
+    }
+
 }

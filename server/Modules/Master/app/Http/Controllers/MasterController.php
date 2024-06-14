@@ -9,6 +9,10 @@ use Illuminate\Http\Response;
 
 class MasterController extends Controller
 {
+    protected $controller;
+    public function __construct(Controller $controller) {
+        $this->controller = $controller;
+    }
     /**
      * Display a listing of the resource.
      */

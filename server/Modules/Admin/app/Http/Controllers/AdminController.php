@@ -12,18 +12,22 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Modules\Admin\Emails\MailActivatedAdmin;
 use Modules\Admin\Models\TAdminTab;
+use Modules\Master\Models\MRoleTab;
 
 class AdminController extends Controller
 {
 
     protected $controller;
     protected $tAdminTab;
+    protected $mRoleTab;
     public function __construct(
         Controller $controller,
-        TAdminTab $tAdminTab
+        TAdminTab $tAdminTab,
+        MRoleTab $mRoleTab
     ) {
         $this->controller = $controller;
         $this->tAdminTab = $tAdminTab;
+        $this->mRoleTab = $mRoleTab;
     }
 
     /**
@@ -33,7 +37,7 @@ class AdminController extends Controller
     {
         return $this->controller->responsList(
             'USER ALL',
-            $this->tAdminTab->paginate(10),
+            $this->tAdminTab->latest()->paginate(10),
             array(
                 [ 'name' => 'Informasi','type' => 'array', 'child' => array(
                         ['key' => 'name', 'type' => 'string', 'className' => 'font-interbold text-sm'],
@@ -42,8 +46,7 @@ class AdminController extends Controller
                 ],
                 [ 'name' => 'Phone','key' => 'phone', 'type' => 'string' ],
                 [ 'name' => 'Role','key' => 'role', 'type' => 'string' ],
-                [ 'name' => 'Status Akun','key' => 'status_active', 'type' => 'string', 
-                    'className' => 'uppercase text-center font-intersemibold' ],
+                [ 'name' => 'Status Akun','key' => 'custom_status', 'type' => 'custom' ],
                 [ 'type' => 'action', 'ability' => ['EDIT','DELETE']]
             )
         );
@@ -54,17 +57,19 @@ class AdminController extends Controller
      */
     public function create()
     {
+        $role = $this->mRoleTab->where('id','>',auth()->user()->m_role_tab_id)->get();
         return $this->controller->respons(
             'FORM CREATE',
             array(
-                [ 'key' => 'name', 'name' => null, 'type' => 'text','label' => 'Nama' ],
-                [ 'key' => 'email', 'email' => null, 'type' => 'text', 'label' => 'Email' ],
-                [ 'key' => 'password', 'password' => null, 'type' => 'password', 'label' => 'Password' ],
-                [ 'key' => 'm_role_tab_id', 'm_role_tab_id' => null, 'type' => 'select', 'label' => 'Role',
+                [ 'key' => 'name', 'name' => null, 'type' => 'text','label' => 'Nama', 'isRequired' => true ],
+                [ 'key' => 'email', 'email' => null, 'type' => 'text', 'label' => 'Email', 'isRequired' => true ],
+                [ 'key' => 'password', 'password' => null, 'type' => 'password', 'label' => 'Password', 'isRequired' => true ],
+                [ 'key' => 'phone', 'phone' => null, 'type' => 'number', 'label' => 'Whatsapp' ],
+                [ 'key' => 'm_role_tab_id', 'm_role_tab_id' => null, 'type' => 'select', 'label' => 'Role', 'isRequired' => true,
                     'list' => [
-                        'options' => '',
+                        'options' => $role,
                         'keyValue' => 'id',
-                        'keyoption' => 'name'
+                        'keyoption' => 'title'
                     ]
                 ]
             )
@@ -136,7 +141,25 @@ class AdminController extends Controller
      */
     public function edit($id)
     {
-        return view('admin::edit');
+        $detail = $this->tAdminTab->where('id', $id)->first();
+        $role = $this->mRoleTab->where('id','>=',auth()->user()->m_role_tab_id)->get();
+        return $this->controller->respons(
+            'FORM EDIT',
+            array(
+                [ 'key' => 'name', 'name' => $detail->name, 'type' => 'text','label' => 'Nama', 'isRequired' => true ],
+                [ 'key' => 'email', 'email' => $detail->email, 'type' => 'text', 'label' => 'Email', 'isRequired' => true ],
+                [ 'key' => 'phone', 'phone' => $detail->phone, 'type' => 'number', 'label' => 'Whatsapp' ],
+                [ 'key' => 'm_role_tab_id', 'm_role_tab_id' => null, 
+                    'placeholder' => $this->mRoleTab->where('id',$detail->m_role_tab_id)->pluck('title')->first(),
+                    'type' => 'select', 'label' => 'Role', 'isRequired' => true,
+                    'list' => [
+                        'options' => $role,
+                        'keyValue' => 'id',
+                        'keyoption' => 'title'
+                    ]
+                ]
+            )
+        );
     }
 
     /**
@@ -147,12 +170,11 @@ class AdminController extends Controller
         $this->controller->validasi($request->all(),[
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:6',
         ]);
 
         try {
             DB::beginTransaction();
-            $request['password'] = Hash::make($request->password);
+            if(isset($request->password)) {$request['password'] = Hash::make($request->password);}
             $this->tAdminTab->where('id',$id)->update($request->all());
             DB::commit();
             return $this->controller->respons("USER UPDATED", "Data berhasil di update", [

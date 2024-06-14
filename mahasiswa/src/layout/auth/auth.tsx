@@ -2,7 +2,7 @@ import { Component, ReactNode } from "react";
 import logo from "../../assets/image/Logo Fatahilah.png";
 import Input from "../../components/input/input";
 import Button from "../../components/button/button";
-import client from "../../service/service";
+import { login } from "../auth/service";
 import { setCookie } from "typescript-cookie";
 import { RouterInterface, withRouter } from "../../router/router_component";
 class Auth extends Component<RouterInterface> {
@@ -19,15 +19,14 @@ class Auth extends Component<RouterInterface> {
       email: undefined,
       password: undefined,
     };
-    this.login = this.login.bind(this);
+    this.callLogin = this.callLogin.bind(this);
   }
-  login() {
+  async callLogin() {
     this.setState({ loading: true });
-    client
-      .post("admin:login", {
-        email: this.state.email,
-        password: this.state.password,
-      })
+    await login({
+      email: this.state.email,
+      password: this.state.password,
+    })
       .then((res) => {
         setCookie("token", res.data?.response_data?.token);
         this.setState({ loading: false });
@@ -71,7 +70,7 @@ class Auth extends Component<RouterInterface> {
               isLoading={this.state.loading}
               width="full"
               className="mt-6"
-              onClick={this.login}
+              onClick={this.callLogin}
             />
           </div>
         </div>

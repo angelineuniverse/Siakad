@@ -27,22 +27,46 @@ const router = createBrowserRouter([
                 index: true,
                 async lazy() {
                     let Dashboard = await import('../layout/dashboard/index');
-                    return { Component: Dashboard.default}
+                    return { Component: Dashboard.default }
                 },
             },
             {
-                path: 'master',
-                children: [
-                    {
-                        path: 'anggota',
-                        async lazy() {
-                            let Anggota = await import('../layout/master/anggota/index');
-                            return { Component: Anggota.default}
-                        },
-                    }
-                ]
+                path: 'studi',
+                async lazy() {
+                    let Anggota = await import('../layout/studi/studi');
+                    return { Component: Anggota.default}
+                },
+            },
+            {
+                path: "pengumuman",
+                async lazy() {
+                    let Pengumuman = await import('../layout/pengumuman/pengumuman');
+                    return { Component: Pengumuman.default}
+                },
+            },
+            {
+                path: "profile",
+                async lazy() {
+                    let Profile = await import('../layout/profile/profile');
+                    return { Component: Profile.default}
+                },
+            },
+            {
+                path: "krs",
+                async lazy() {
+                    let Krs = await import('../layout/krs/krs');
+                    return { Component: Krs.default}
+                },
+            },
+            {
+                path: "finance",
+                async lazy() {
+                    let Finance = await import('../layout/finance/finance');
+                    return { Component: Finance.default}
+                },
             },
         ]
-    }
+    },
+    
 ]);
 export default router;

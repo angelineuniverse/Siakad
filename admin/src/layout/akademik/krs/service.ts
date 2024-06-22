@@ -47,3 +47,12 @@ export async function listMatakuliah(periodeId: string | undefined) {
 export async function selectedMatakuliah(periodeId: string | undefined, mahasiswaId: string | number | undefined) {
     return await client.get('krs-periode/' + periodeId + '/matakuliah/' + mahasiswaId);
 }
+export async function nilai() {
+    return await client.get('nilai');
+}
+export async function updateNilai(id: number,data: any) {
+    return await client.post('krs/'+id+'/nilai',data);
+}
+export async function updateStatus(id: number) {
+    return await client.get('krs/'+id+'/validasi');
+}

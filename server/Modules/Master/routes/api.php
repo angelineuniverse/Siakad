@@ -28,6 +28,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('v1')->group(functi
         Route::delete('{id}', [MenuController::class,'destroy']);
         Route::get('{id}/edit', [MenuController::class,'edit']);
     });
+    Route::get('nilai', [MasterController::class,'nilai']);
     Route::resource('role',RoleController::class);
     Route::resource('fakultas',FakultasController::class);
     Route::resource('jurusan',JurusanController::class);

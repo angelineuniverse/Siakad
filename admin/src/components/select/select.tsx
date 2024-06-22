@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { ModelSelect, sizeInput, sizeLabel } from "./model";
 import clsx from "clsx";
+import { get } from "lodash";
 
 class Select extends Component<ModelSelect> {
   state: Readonly<{
@@ -78,7 +79,7 @@ class Select extends Component<ModelSelect> {
                     });
                   }}
                 >
-                  {item[this.props.keyoption]}
+                  {get(item, this.props.keyoption)}
                 </option>
               ))}
             </div>

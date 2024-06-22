@@ -6,6 +6,9 @@ export async function index(params: undefined) {
 export async function create(params: undefined) {
     return await client.get('pengumuman/create', params);
 }
+export async function show() {
+    return await client.get('pengumuman/last');
+}
 export async function store(data: any) {
     return await client.post('pengumuman', data);
 }

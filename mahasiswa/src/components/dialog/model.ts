@@ -1,14 +1,15 @@
 import React from "react";
 
-type SizeDialog = "small" | "medium" | "large" | "custom"
 export interface ModelDialog {
     children?: React.ReactNode;
     onOpen: boolean | React.MouseEventHandler<HTMLDivElement> ;
     onClose: React.MouseEventHandler<HTMLDivElement>;
     className?: string;
-    size?: SizeDialog;
+    size?: any;
     useHeading?: boolean;
+    hideIconClose?: boolean;
     classHeading?: string;
+    classTitle?: string;
     title?: string;
     subtitle?: string;
 }

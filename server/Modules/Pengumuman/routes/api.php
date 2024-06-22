@@ -17,4 +17,5 @@ use Modules\Pengumuman\Http\Controllers\PengumumanController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::resource('pengumuman', PengumumanController::class);
     Route::post('pengumuman/{id}/update',[PengumumanController::class,'update']);
+    Route::get('pengumuman/user/list',[PengumumanController::class,'pengumumanUser']);
 });

@@ -7,7 +7,7 @@ import { setCookie } from "typescript-cookie";
 import { RouterInterface, withRouter } from "../../router/router_component";
 class Auth extends Component<RouterInterface> {
   state: Readonly<{
-    email: undefined;
+    nim: undefined;
     password: undefined;
     loading: false;
   }>;
@@ -16,7 +16,7 @@ class Auth extends Component<RouterInterface> {
     super(props);
     this.state = {
       loading: false,
-      email: undefined,
+      nim: undefined,
       password: undefined,
     };
     this.callLogin = this.callLogin.bind(this);
@@ -24,15 +24,18 @@ class Auth extends Component<RouterInterface> {
   async callLogin() {
     this.setState({ loading: true });
     await login({
-      email: this.state.email,
+      nim: this.state.nim,
       password: this.state.password,
     })
       .then((res) => {
-        setCookie("token", res.data?.response_data?.token);
-        this.setState({ loading: false });
+        if (res.data?.response_data)
+          setCookie("token", res.data?.response_data?.token);
+        // this.setState({ loading: false });
         return this.props.navigate("/");
       })
-      .catch(() => this.setState({ loading: false }));
+      .catch((err) => {
+        this.setState({ loading: false });
+      });
   }
   render(): ReactNode {
     return (
@@ -46,14 +49,14 @@ class Auth extends Component<RouterInterface> {
           </div>
           <h1 className="text-2xl font-interbold mt-12">Portal Akademik</h1>
           <p className="text-sm font-interregular">
-            Masuk menggunakan Email dan Password anda
+            Masuk menggunakan nim dan Password anda
           </p>
           <div className="mt-8 gap-y-4 flex flex-col">
             <Input
-              label="Email"
-              type="email"
+              label="Nomor Induk Mahasiswa"
+              type="text"
               size="medium"
-              onValueChange={(value: string) => this.setState({ email: value })}
+              onValueChange={(value: string) => this.setState({ nim: value })}
             />
             <Input
               label="Password"

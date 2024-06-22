@@ -39,7 +39,6 @@ class Create extends Component<RouterInterface> {
   async openCreate(params?: undefined) {
     this.setState({ form: undefined, checkbox: false });
     await create(params).then((res) => {
-      console.log(res, "response");
       this.setState({
         form: res.data,
       });

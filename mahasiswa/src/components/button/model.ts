@@ -10,5 +10,6 @@ export interface ModelButton {
     size: ButtonSize;
     width: ButtonWidth;
     isLoading?: boolean;
+    isDisable?: boolean;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }

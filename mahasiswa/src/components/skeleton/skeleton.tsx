@@ -1,10 +1,10 @@
-import React, { Component, ReactNode } from "react";
+import React, { Component } from "react";
 import { ModelSkeleton } from "./model";
 import clsx from "clsx";
 import "./style.css";
 
 class Skeleton extends Component<ModelSkeleton> {
-  render(): ReactNode {
+  render(): React.ReactNode {
     return (
       <div>
         {(() => {
@@ -13,14 +13,28 @@ class Skeleton extends Component<ModelSkeleton> {
             case "span":
               return (
                 <div
-                  className={clsx("skeleton", `skeleton-${this.props.type}`)}
+                  className={clsx(
+                    "skeleton",
+                    `skeleton-${this.props.type}`,
+                    this.props.className
+                  )}
                 ></div>
               );
             case "input":
               return (
                 <div>
-                  <div className={clsx("skeleton skeleton-label")}></div>
-                  <div className={clsx("skeleton skeleton-input")}></div>
+                  <div
+                    className={clsx(
+                      "skeleton skeleton-label",
+                      this.props.className
+                    )}
+                  ></div>
+                  <div
+                    className={clsx(
+                      "skeleton skeleton-input",
+                      this.props.className
+                    )}
+                  ></div>
                 </div>
               );
             case "random":
@@ -30,6 +44,16 @@ class Skeleton extends Component<ModelSkeleton> {
                     "skeleton",
                     "h-[1.1rem] mb-[0.5rem] rounded-[0.25rem]",
                     `w-[${Math.floor(Math.random() * 6) + 1}0%]`
+                  )}
+                ></div>
+              );
+            case "custom":
+              return (
+                <div
+                  className={clsx(
+                    "skeleton",
+                    "mb-[0.5rem] rounded-[0.25rem] w-full",
+                    this.props.className
                   )}
                 ></div>
               );

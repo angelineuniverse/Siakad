@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Dosen\Models\TDosenTabs;
 use Modules\Master\Models\MFakultasTab;
 use Modules\Master\Models\MJurusanTab;
+use Modules\Master\Models\MNilaiTabs;
 use Modules\Master\Models\MSemesterPeriodeTabs;
 use Modules\Master\Models\MSemesterTab;
 use Modules\Master\Models\MStatusTab;
@@ -34,7 +35,8 @@ class TMataKuliahTab extends Model
     ];
 
     protected $appends = [
-        'selected'
+        'selected',
+        'nilai',
     ];
 
     public function dosen(){
@@ -58,6 +60,10 @@ class TMataKuliahTab extends Model
 
     public function getSelectedAttribute(){
         return false;
+    }
+
+    public function getNilaiAttribute(){
+        return null;
     }
     
     protected static function newFactory()

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Modules\Dosen\Models\TDosenTabs;
+use Modules\Krs\Models\TKrsMatakuliahTab;
 use Modules\Master\Models\MCodeTab;
 use Modules\Master\Models\MFakultasTab;
 use Modules\Master\Models\MJurusanTab;
@@ -24,6 +25,7 @@ class MataKuliahController extends Controller
     protected $mSemesterTab;
     protected $mSemesterPeriodeTabs;
     protected $mFakultasTab;
+    protected $tKrsMatakuliahTab;
     protected $mJurusanTab;
     public function __construct(
         Controller $controller,
@@ -32,12 +34,14 @@ class MataKuliahController extends Controller
         MSemesterTab $mSemesterTab,
         MSemesterPeriodeTabs $mSemesterPeriodeTabs,
         MFakultasTab $mFakultasTab,
+        TKrsMatakuliahTab $tKrsMatakuliahTab,
         MJurusanTab $mJurusanTab,
     ) {
         $this->controller = $controller;
         $this->tMataKuliahTab = $tMataKuliahTab;
         $this->tDosenTabs = $tDosenTabs;
         $this->mSemesterTab = $mSemesterTab;
+        $this->tKrsMatakuliahTab = $tKrsMatakuliahTab;
         $this->mSemesterPeriodeTabs = $mSemesterPeriodeTabs;
         $this->mFakultasTab = $mFakultasTab;
         $this->mJurusanTab = $mJurusanTab;
@@ -345,5 +349,27 @@ class MataKuliahController extends Controller
         //         [ 'key' => 'periode_semester', 'periode_semester' => null, 'type' => 'text', 'label' => 'Periode Semester', 'visible' => false, 'readonly' => true ],
         //     )
         // );
+    }
+
+    public function ipk(){
+        $listAll = $this->tKrsMatakuliahTab
+            ->with('krs','nilai','detail_matakuliah')
+            ->whereHas('krs', function($a){
+                $a->where('t_mahasiswa_tabs_id', auth()->user()->id);
+            })->get();
+        $bobotTotal = 0;
+        $sksTotal = 0;
+        foreach ($listAll as $value) {
+            $sksTotal = $sksTotal + $value->detail_matakuliah->bobot_sks;
+            if(isset($value->nilai->nilai)) {
+                $bobotTotal = $bobotTotal + ($value->nilai->nilai * $value->detail_matakuliah->bobot_sks);
+            }
+        }
+        $ipk = 0;
+        if($bobotTotal != 0 || $sksTotal != 0) {
+            $ipk = $bobotTotal / $sksTotal;
+        }
+        
+        return $this->controller->respons('IPK NOW', $ipk);
     }
 }

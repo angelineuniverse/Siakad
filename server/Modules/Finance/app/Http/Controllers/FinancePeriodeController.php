@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Modules\Krs\Models\TKrsMatakuliahTab;
 use Modules\Krs\Models\TKrsPeriodeTab;
 use Modules\Krs\Models\TKrsTab;
 use Modules\Master\Models\MSemesterPeriodeTabs;
@@ -18,6 +19,7 @@ class FinancePeriodeController extends Controller
     protected $controller;
     protected $mStatusTab;
     protected $tKrsPeriodeTab;
+    protected $tKrsMatakuliahTab;
     protected $tKrsTab;
     protected $mSemesterTab;
     protected $mSemesterPeriodeTabs;
@@ -26,11 +28,13 @@ class FinancePeriodeController extends Controller
         MStatusTab $mStatusTab,
         MSemesterPeriodeTabs $mSemesterPeriodeTabs,
         MSemesterTab $mSemesterTab,
+        TKrsMatakuliahTab $tKrsMatakuliahTab,
         TKrsPeriodeTab $tKrsPeriodeTab,
         TKrsTab $tKrsTab,
     ) {
         $this->controller = $controller;
         $this->mStatusTab = $mStatusTab;
+        $this->tKrsMatakuliahTab = $tKrsMatakuliahTab;
         $this->mSemesterTab = $mSemesterTab;
         $this->mSemesterPeriodeTabs = $mSemesterPeriodeTabs;
         $this->tKrsPeriodeTab = $tKrsPeriodeTab;
@@ -58,23 +62,30 @@ class FinancePeriodeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return $this->controller->respons(
-            'FORM CREATE',
+        $krstabs = $this->tKrsTab
+            ->where('t_krs_periode_tabs_id',$request->periodeId)
+            ->where('t_mahasiswa_tabs_id',$request->mahasiswaId)
+            ->first();
+            
+        return $this->controller->responsList(
+            "FINANCE MATAKULIAH LIST", 
+            $this->tKrsMatakuliahTab->where('t_krs_tabs_id', $krstabs->id)->with([
+                'detail_matakuliah' => function($a){
+                    $a->with('dosen');
+                }
+            ])->paginate(10),
             array(
-                [ 'key' => 'title', 'title' => null, 'type' => 'text','label' => 'Nama Periode', 'isRequired' => true ],
-                [ 'key' => 'm_semester_periode_tabs_id', 'm_semester_periode_tabs_id' => null, 
-                        'type' => 'select' ,'label' => 'Semester', 
-                        'isRequired' => true,
-                        'list' => [
-                            'options' => $this->mSemesterPeriodeTabs->all(),
-                            'keyValue' => 'id',
-                            'keyoption' => 'title'
-                        ]
-                    ],
-                [ 'key' => 'start', 'start' => null, 'type' => 'date','label' => 'Mulai Periode', 'isRequired' => true ],
-                [ 'key' => 'end', 'end' => null, 'type' => 'date','label' => 'Selesai Periode', 'isRequired' => true ],
+                [ 'name' => 'Code','key' => 'detail_matakuliah.code', 'type' => 'string' ],
+                [ 'name' => 'Mata Kuliah','key' => 'detail_matakuliah.title', 'type' => 'string', 'className' => 'font-interbold' ],
+                [ 'name' => 'Dosen','key' => 'detail_matakuliah.dosen.name', 'type' => 'string' ],
+                [ 'name' => 'Bobot SKS','key' => 'detail_matakuliah.bobot_sks', 'type' => 'string', 'className' => 'text-center', 'classNameColumn' => 'text-center' ],
+                [ 'name' => 'Jadwal','key' => 'jadwal' ,'type' => 'array', 'child' => array(
+                        ['key' => 'detail_matakuliah.days', 'type' => 'string', 'className' => 'font-interbold text-center'],
+                        ['key' => 'detail_matakuliah.times', 'type' => 'string', 'className' => 'font-interregular text-xs text-center'],
+                    )
+                ],
             )
         );
     }
@@ -120,34 +131,7 @@ class FinancePeriodeController extends Controller
      */
     public function edit($id)
     {
-        $detail = $this->tKrsPeriodeTab->where('id', $id)->first();
-        return $this->controller->respons(
-            'FORM EDIT',
-            array(
-                [ 'key' => 'title', 'title' => $detail->title, 'type' => 'text','label' => 'Nama Periode', 'isRequired' => true ],
-                [ 'key' => 'm_semester_periode_tabs_id', 'm_semester_periode_tabs_id' => $detail->m_semester_periode_tabs_id, 
-                        'type' => 'select' ,'label' => 'Semester',
-                        'placeholder' => $this->mSemesterPeriodeTabs->where('id',$detail->m_semester_periode_tabs_id)->pluck('title')->first(),
-                        'isRequired' => true,
-                        'list' => [
-                            'options' => $this->mSemesterPeriodeTabs->all(),
-                            'keyValue' => 'id',
-                            'keyoption' => 'title'
-                        ]
-                    ],
-                [ 'key' => 'start', 'start' => $detail->start, 'type' => 'date','label' => 'Mulai Periode', 'isRequired' => true ],
-                [ 'key' => 'end', 'end' => $detail->end, 'type' => 'date','label' => 'Selesai Periode', 'isRequired' => true ],
-                [ 'key' => 'm_status_tabs_id', 'm_status_tabs_id' => $detail->m_status_tabs_id, 'type' => 'select',
-                    'placeholder' => $this->mStatusTab->where('id',$detail->m_status_tabs_id)->pluck('title')->first(),
-                    'label' => 'Dosen', 'isRequired' => true,
-                    'list' => [
-                        'options' => $this->mStatusTab->all(),
-                        'keyValue' => 'id',
-                        'keyoption' => 'title'
-                    ]
-                ],
-            )
-        );
+        //
     }
 
     /**
@@ -156,19 +140,16 @@ class FinancePeriodeController extends Controller
     public function update(Request $request, $id)
     {
         $this->controller->validasi($request->all(),[
-            'title' => 'required',
-            'start' => 'required',
-            'end' => 'required',
             'm_status_tabs_id' => 'required',
         ]);
 
         try {
             DB::beginTransaction();
-            $this->tKrsPeriodeTab->where('id',$id)->update($request->all());
+            $this->tKrsTab->where('id',$id)->update($request->all());
             DB::commit();
-            return $this->controller->respons("UPDATED", "Periode berhasil di update", [
-                'title' => "Informasi Periode berhasil diubah",
-                'body' => 'Data Periode berhasil di perbaharui di system',
+            return $this->controller->respons("UPDATED", "KRS Mahasiswa berhasil di update", [
+                'title' => "Informasi KRS Mahasiswa berhasil diubah",
+                'body' => 'Data KRS Mahasiswa berhasil di perbaharui di system',
                 'theme' => 'success'
             ]);
         } catch (\Throwable $th) {
@@ -197,29 +178,4 @@ class FinancePeriodeController extends Controller
         }
     }
 
-    public function matakuliahList($periodeId){
-        $periode = $this->tKrsPeriodeTab->find($periodeId);
-        return $this->controller->respons(
-            "MATAKULIAH LIST", 
-            $this->mSemesterTab->krs($periode->m_semester_periode_tabs_id)->get()
-        );
-    }
-
-    public function selectedmatakuliahList($periodeId,$mahasiswaId){
-        $krstabs = $this->tKrsTab
-            ->where('t_krs_periode_tabs_id',$periodeId)
-            ->where('t_mahasiswa_tabs_id',$mahasiswaId)
-            ->currentKrs()
-            ->first();
-            
-        $i = 0;
-        foreach ($krstabs->matakuliah as $value) {
-            $i = $i + $value->sks;
-        }
-        $krstabs->total_sks = $i;
-        return $this->controller->respons(
-            "MATAKULIAH LIST", 
-            $krstabs
-        );
-    }
 }

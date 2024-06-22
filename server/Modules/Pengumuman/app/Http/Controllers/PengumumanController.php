@@ -3,6 +3,7 @@
 namespace Modules\Pengumuman\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -113,7 +114,7 @@ class PengumumanController extends Controller
      */
     public function show($id)
     {
-        return $this->controller->respons('USER DETAIL', auth()->user());
+        return $this->controller->respons('LAST PENGUMUMAN', $this->tPengumumanTab->orderBy('id','desc')->limit(2)->get());
     }
 
     /**
@@ -192,5 +193,17 @@ class PengumumanController extends Controller
             DB::rollBack();
             abort(400, $th->getMessage());
         }
+    }
+
+    public function pengumumanUser(){
+        return $this->controller->respons(
+            'LAST PENGUMUMAN', 
+            $this->tPengumumanTab
+                ->where('start_date','<',Carbon::now())
+                ->where('end_date','>',Carbon::now())
+                ->where('active',1)
+                ->orderBy('id','desc')
+                ->get()
+        );
     }
 }

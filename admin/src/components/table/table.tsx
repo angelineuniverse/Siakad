@@ -358,6 +358,19 @@ class Table extends Component<ModelTable> {
                                 {get(row, col.key) ?? "-"}
                               </p>
                             )}
+                            {col.type === "currency" && (
+                              <p className={col.className}>
+                                {get(row, col.key).toLocaleString(
+                                  col?.localecurrency ?? "id-ID",
+                                  {
+                                    style: "currency",
+                                    currency: col.currency ?? "IDR",
+                                    minimumFractionDigits:
+                                      col?.minimumFractionDigits ?? 0,
+                                  }
+                                ) ?? "-"}
+                              </p>
+                            )}
                             {col.type === "status" && (
                               <p className="text-center">
                                 <p

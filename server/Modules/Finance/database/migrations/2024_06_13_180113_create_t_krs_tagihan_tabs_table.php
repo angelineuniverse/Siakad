@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('t_krs_tagihan_tabs', function (Blueprint $table) {
             $table->id();
+            $table->char('code',10);
             $table->unsignedBigInteger('t_krs_tabs_id');
             $table->integer('payment')->default(0);
-            $table->tinyInteger('validation')->default(1)->comment('1 = valid');
+            $table->unsignedMediumInteger('m_status_tabs_id')->default(8)->comment('8 = valid');
             $table->timestamps();
             $table->foreign('t_krs_tabs_id')->references('id')->on('t_krs_tabs')->cascadeOnDelete();
+            $table->foreign('m_status_tabs_id')->references('id')->on('m_status_tabs')->cascadeOnDelete();
         });
     }
 

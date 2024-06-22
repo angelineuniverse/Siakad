@@ -14,8 +14,9 @@ use Modules\MataKuliah\Http\Controllers\MataKuliahController;
  *
 */
 
-Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('v1')->group(function(){
+Route::middleware(['auth:sanctum', 'ability:admin,mahasiswa'])->prefix('v1')->group(function(){
     Route::resource('matakuliah', MataKuliahController::class);
     Route::post('matakuliah/{id}/update',[MataKuliahController::class,'update']);
     Route::get('matakuliah/{mahasiswaId}/krs',[MataKuliahController::class,'matakuliah_form_krs']);
+    Route::get('matakuliah/ipk/final',[MataKuliahController::class,'ipk']);
 });

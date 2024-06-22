@@ -3,9 +3,8 @@
 namespace Modules\Krs\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Modules\Krs\Models\TKrsMatakuliahTab;
 use Modules\Krs\Models\TKrsPeriodeTab;
@@ -70,12 +69,13 @@ class KrsController extends Controller
                 ],
                 [ 'name' => 'Total SKS','key' => 'total_sks', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
                 [ 'name' => 'Nilai KHS', 'type' => 'action_status', 'ability' => array(
-                    [ 'title' => 'Upload', 'theme' => 'primary', 'show_by' => 'm_status_tabs_id', 'show_value' => [6]],
+                    [ 'title' => 'Upload', 'key' => 'upload' ,'theme' => 'primary', 'show_by' => 'm_status_tabs_id', 'show_value' => [6]],
                 )],
                 [ 'name' => 'Status','key' => 'status', 'type' => 'status' ],
                 [ 'name' => 'Action', 'type' => 'action_status', 'ability' => array(
                     [ 'title' => 'Aktivasi', 'key' => 'aktivasi' ,'theme' => 'success', 'show_by' => 'm_status_tabs_id', 'show_value' => [7]],
                     [ 'title' => 'Ubah', 'key' => 'ubah' ,'theme' => 'warning', 'show_by' => 'm_status_tabs_id', 'show_value' => [1]],
+                    [ 'title' => 'Lihat', 'key' => 'ubah' ,'theme' => 'warning', 'show_by' => 'm_status_tabs_id', 'show_value' => [6]],
                     [ 'title' => 'Hapus', 'key' => 'hapus' ,'theme' => 'error', 'show_by' => 'm_status_tabs_id', 'show_value' => [1,2,3,4]],
                 )],
             )
@@ -120,9 +120,9 @@ class KrsController extends Controller
 
         try {
             DB::beginTransaction();
-            $user = $request->form[0];
+            $user = $request->form[0] ?? null;
             $periode = $this->tKrsPeriodeTab->find($request->t_periode_tabs_id);
-            $mahasiswa = $this->tMahasiswaTab->where('id',$user[$user['key']])->first();
+            $mahasiswa = $this->tMahasiswaTab->where('id',isset($user) ? $user[$user['key']] : auth()->user()->id)->first();
             $semesterMahasiswa = $this->tMahasiswaSemesterTab
                 ->where('t_mahasiswa_tabs_id', $mahasiswa->id)
                 ->where('active',1)
@@ -157,7 +157,39 @@ class KrsController extends Controller
      */
     public function show($id)
     {
-        return $this->controller->respons('USER DETAIL', auth()->user());
+        $semesterActive = $this->tMahasiswaSemesterTab
+            ->where('t_mahasiswa_tabs_id', auth()->user()->id)
+            ->where('active',1)
+            ->first();
+        $krsmahasiswa = $this->tKrsTab
+            ->where('t_mahasiswa_tabs_id', auth()->user()->id)
+            ->where('t_mahasiswa_semester_tabs_id', $semesterActive->id)
+            ->has('uang_detail')
+            ->first();
+        if(isset($krsmahasiswa)) {
+            $matkul = $this->tKrsMatakuliahTab
+                ->where('t_krs_tabs_id', $krsmahasiswa->id)
+                ->with(['detail_matakuliah' => function($a){
+                    $a->with('dosen');
+                }])
+                ->paginate(20);
+        }
+        return $this->controller->responsList(
+            'JADWAL KRS MAHASISWA',
+            $matkul ?? null,
+            array(
+                [ 'name' => 'Code','key' => 'detail_matakuliah.code', 'type' => 'string' ],
+                [ 'name' => 'Mata Kuliah','key' => 'detail_matakuliah.title', 'type' => 'string' ],
+                [ 'name' => 'Dosen','key' => 'detail_matakuliah.dosen.name', 'type' => 'string' ],
+                [ 'name' => 'SKS','key' => 'detail_matakuliah.bobot_sks', 'type' => 'string' ],
+                [ 'name' => 'Jadwal', 'key' => 'jadwal' ,'type' => 'array','child' => array(
+                    ['key' => 'detail_matakuliah.days', 'type' => 'string', 'className' => 'font-interbold text-sm'],
+                    ['key' => 'detail_matakuliah.times', 'type' => 'string', 'className' => 'italic font-interregular'],
+                    )
+                ],
+                
+            )
+        );
     }
 
     /**
@@ -248,4 +280,64 @@ class KrsController extends Controller
             abort(400, $th->getMessage());
         }
     }
+
+    public function updateNilai(Request $request){
+        $this->controller->validasi($request->all(),[
+            'id' => 'required',
+            'm_nilai_tabs_id' => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $this->tKrsMatakuliahTab->where('id',$request->id)->update([
+                'm_nilai_tabs_id' => $request->m_nilai_tabs_id
+            ]);
+            DB::commit();
+            return $this->controller->respons("UPDATED", "Nilai Berhasil di tambahkan", [
+                'title' => "Nilai Berhasil di tambahkan",
+                'body' => 'Nilai Berhasil di tambahkan ke system',
+                'theme' => 'success'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
+    }
+
+    public function validasiKrsMahasiswa($id)
+    {
+        try {
+            DB::beginTransaction();
+            $krs = $this->tKrsTab->where('id', $id)->first();
+            $krs->update([
+                'm_status_tabs_id' => 8
+            ]);
+            $mahasiswaSemester = $this->tMahasiswaSemesterTab
+                ->where('t_mahasiswa_tabs_id', $krs->t_mahasiswa_tabs_id)
+                ->where('id', $krs->t_mahasiswa_semester_tabs_id)
+                ->where('active', 1)
+                ->first();
+            $mahasiswaSemester->update([
+                'active' => 0,
+            ]);
+            $this->tMahasiswaSemesterTab->create([
+                't_mahasiswa_tabs_id' => $krs->t_mahasiswa_tabs_id,
+                'm_semester_tabs_id' => $mahasiswaSemester->m_semester_periode_tabs_id == 2 
+                    ? $mahasiswaSemester->m_semester_tabs_id + 1: $mahasiswaSemester->m_semester_tabs_id ,
+                'm_semester_periode_tabs_id' => $mahasiswaSemester->m_semester_periode_tabs_id == 2 
+                    ? 1: $mahasiswaSemester->m_semester_periode_tabs_id + 1,
+                'active' => 1
+            ]);
+            DB::commit();
+            return $this->controller->respons("CREATED", "KRS berhasil divalidasi", [
+                'title' => "KRS berhasil divalidasi",
+                'body' => 'Data KRS yang anda validasi berhasil di tambahkan ke system',
+                'theme' => 'success'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
+    }
+
 }

@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'mahasiswa' => [
+            'driver' => 'session',
+            'provider' => 'mahasiswas',
+        ],
     ],
 
     /*
@@ -63,6 +67,10 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => Modules\Admin\Models\TAdminTab::class,
+        ],
+        'mahasiswas' => [
+            'driver' => 'eloquent',
+            'model' => Modules\Mahasiswa\Models\TMahasiswaTab::class,
         ],
 
         // 'users' => [

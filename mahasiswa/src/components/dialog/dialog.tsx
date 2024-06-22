@@ -4,11 +4,11 @@ import { clsx } from "clsx";
 import Icon from "../icon/icon";
 import "./style.css";
 
-const SizeDialog = {
+const SizeDialog: any = {
   small: "w-2/6",
   medium: "w-3/6",
   large: "w-4/6",
-  custom: "",
+  fit: "w-fit",
 };
 
 class Dialog extends Component<ModelDialog> {
@@ -26,6 +26,7 @@ class Dialog extends Component<ModelDialog> {
             ref={this.modal}
             aria-hidden="true"
             className={clsx(
+              "py-10",
               "fixed inset-0 flex justify-center items-center",
               "backdrop-blur bg-black/10 transition-all ease-in-out"
             )}
@@ -37,14 +38,15 @@ class Dialog extends Component<ModelDialog> {
             ></div>
             <div
               className={clsx(
+                "relative",
                 "dialog border z-20 border-gray-100 shadow-2xl rounded-xl bg-white h-fit",
-                SizeDialog[this.props.size ?? "custom"],
-                this.props.useHeading ? "py-5" : "p-5",
+                SizeDialog[this.props.size ?? "fit"] ?? this.props.size,
+                this.props.useHeading ? "py-3.5" : "p-5",
                 this.props.className
               )}
             >
               {this.props.useHeading && (
-                <div className="block">
+                <div className="block sticky top-2">
                   <div className="flex justify-end px-5 mb-5">
                     <div
                       className={clsx(
@@ -52,21 +54,30 @@ class Dialog extends Component<ModelDialog> {
                         this.props.classHeading
                       )}
                     >
-                      <h1 className=" font-intersemibold text-lg">
+                      <h1
+                        className={clsx(
+                          "font-intersemibold text-lg",
+                          this.props.classTitle
+                        )}
+                      >
                         {this.props.title}
                       </h1>
                       <p>{this.props.subtitle}</p>
                     </div>
-                    <Icon
-                      icon="close"
-                      width={20}
-                      height={20}
-                      color="gray"
-                      className="my-auto cursor-pointer"
-                      onClick={this.props.onClose}
-                    />
+                    {!this.props.hideIconClose && (
+                      <Icon
+                        icon="close"
+                        width={25}
+                        height={25}
+                        color="gray"
+                        className="my-auto cursor-pointer"
+                        onClick={this.props.onClose}
+                      />
+                    )}
                   </div>
-                  <div className="px-5">{this.props.children}</div>
+                  <div className="px-5 max-h-[85vh] overflow-y-auto">
+                    {this.props.children}
+                  </div>
                 </div>
               )}
               {!this.props.useHeading && this.props.children}

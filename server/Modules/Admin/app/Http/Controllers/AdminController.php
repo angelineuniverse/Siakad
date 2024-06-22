@@ -118,7 +118,10 @@ class AdminController extends Controller
             if(!Auth::attempt($credential)){
                 abort(400, "Data akun yang anda masukan tidak cocok");
             }
-            $user = $this->tAdminTab->where('email', $request->email)->first();
+            $user = $this->tAdminTab->where('email', $request->email)->where('active',1)->first();
+            if(!isset($user)) {
+                abort(400, "Akun anda belum active, lakukan aktivasi terlebih dahulu");
+            }
             $token = $user->createToken('4ngel1n3',['admin'])->plainTextToken;
             return $this->controller->respons("User Login", [
                 'token' => $token
@@ -156,8 +159,20 @@ class AdminController extends Controller
                         'options' => $role,
                         'keyValue' => 'id',
                         'keyoption' => 'title'
-                    ]
-                ]
+                        ]
+                ],
+                [ 'key' => 'active', 'active' => null, 
+                    'placeholder' => $detail->active ? 'ACTIVE' : 'TIDAK ACTIVE',
+                    'type' => 'select', 'label' => 'Aktivasi Akun', 'isRequired' => true,
+                    'list' => [
+                        'options' => array(
+                            [ 'id' => 0, 'title' => 'TIDAK ACTIVE' ],
+                            [ 'id' => 1, 'title' => 'ACTIVE' ],
+                        ),
+                        'keyValue' => 'id',
+                        'keyoption' => 'title'
+                        ]
+                ],
             )
         );
     }

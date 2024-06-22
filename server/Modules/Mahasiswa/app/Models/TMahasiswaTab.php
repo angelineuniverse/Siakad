@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Mahasiswa\Database\factories\TMahasiswaTabFactory;
 use Modules\Master\Models\MCodeTab;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\Master\Models\MFakultasTab;
 use Modules\Master\Models\MJurusanTab;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class TMahasiswaTab extends Model
+class TMahasiswaTab extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +30,7 @@ class TMahasiswaTab extends Model
         'deleted',
         'curiculum',
         'date_in',
+        'graduation',
         't_mahasiswa_periode_tabs_id',
         'm_register_type_tabs_id',
         'm_register_enroll_tabs_id',

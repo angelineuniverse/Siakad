@@ -92,6 +92,16 @@ class Index extends Component<RouterInterface> {
             row?.t_mahasiswa_tabs_id
         );
         break;
+      case "upload":
+        this.props.navigate(
+          "/akademik/krs/" +
+            this.props.params?.periodeId +
+            "/studi/" +
+            row?.id +
+            "/" +
+            row?.t_mahasiswa_tabs_id
+        );
+        break;
       case "hapus":
         this.setState({ popupDeleted: true, detail: row });
         break;

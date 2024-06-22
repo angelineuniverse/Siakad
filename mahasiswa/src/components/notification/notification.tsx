@@ -5,7 +5,7 @@ import Icon from "../icon/icon";
 
 class Notification extends Component<ModelNotification> {
   state: Readonly<{
-    tema: object | any;
+    tema: any;
   }>;
 
   constructor(props: ModelNotification) {

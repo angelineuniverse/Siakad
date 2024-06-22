@@ -3,6 +3,7 @@
 namespace Modules\Krs\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -202,6 +203,28 @@ class KrsPeriodeController extends Controller
         return $this->controller->respons(
             "MATAKULIAH LIST", 
             $this->mSemesterTab->krs($periode->m_semester_periode_tabs_id)->get()
+        );
+    }
+
+    public function matakuliahListLatest(){
+        $periode = $this->tKrsPeriodeTab
+            ->where('start', '<', Carbon::now())
+            ->where('end', '>', Carbon::now())
+            ->where('m_status_tabs_id',2)
+            ->orderBy('id','desc')
+            ->first();
+        $krsExist = $this->tKrsTab->where('t_krs_periode_tabs_id', $periode->id)
+            ->where('t_mahasiswa_tabs_id', auth()->user()->id)->first();
+        return $this->controller->respons(
+            "MATAKULIAH LAST LIST", 
+            [
+                "exist" => $krsExist ? true : false,
+                "active" => $periode ? true : false,
+                'matkul' => isset($periode->m_semester_periode_tabs_id)
+                    ? $this->mSemesterTab->krs($periode->m_semester_periode_tabs_id)->get()
+                    : null,
+                "periode" => $periode
+            ]
         );
     }
 

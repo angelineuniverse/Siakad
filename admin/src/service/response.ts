@@ -36,3 +36,11 @@ export function formInputs(form: Array<any>) {
     }
     return formData;
 }
+
+export function formInputsObject(form: any) {
+    let formData = new FormData();
+    Object.keys(form).forEach((key, index) => {
+        formData.append(key, form[key]);
+    });
+    return formData;
+}

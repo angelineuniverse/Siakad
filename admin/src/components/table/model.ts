@@ -23,7 +23,7 @@ export interface ModelTable{
     extraHeader?: React.ReactNode
 }
 
-type TypeColumn = "string" | "datetime" | "object" | "array" | "action" | "date" | 'status' | "custom" | 'action_status' | "date-prefix"| "file" | "date-prefix-custom";
+type TypeColumn = "string" | "datetime" | "object" | "array" | "currency" | "action" | "date" | 'status' | "custom" | 'action_status' | "date-prefix"| "file" | "date-prefix-custom";
 export interface ResponseColumn{
     key: string;
     name?: string;
@@ -33,6 +33,9 @@ export interface ResponseColumn{
     dateFormat?: string;
     child?: Array<ResponseColumn>;
     ability?: any;
+    currency?: string;
+    localecurrency?: string;
+    minimumFractionDigits?: number;
     className?: string;
     classNameRow?: string;
     color?: string;

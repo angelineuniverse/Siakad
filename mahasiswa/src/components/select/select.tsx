@@ -61,7 +61,7 @@ class Select extends Component<ModelSelect> {
               this.setState((prevState: any) => ({ open: !prevState["open"] }))
             }
           >
-            {this.props.placeholder ? this.state.placeholder : "Pilih Item"}
+            {this.state.placeholder ?? "Pilih Item"}
           </p>
           {this.state.open && (
             <div className="rounded-md absolute list-none py-1 top-11 bg-white z-10 left-0 right-0 font-interregular border-gray-400/70 border">

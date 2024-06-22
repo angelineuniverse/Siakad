@@ -27,13 +27,13 @@ class Controller
         return response()->json(
             [
                'response_message' => $message,
-               'response_data' => $data->getCollection(),
-               'property' => $data->perPage() == 1000 ? null : [
-                    'totalItem' => $data->total(),
-                    'countItem' => $data->count(),
-                    'per_page' => $data->perPage(),
-                    'currentPage' => $data->currentPage(),
-                    'totalPage' => $data->lastPage()
+               'response_data' => $data ? $data->getCollection() : null,
+               'property' => [
+                    'totalItem' => $data ? $data->total() : null,
+                    'countItem' => $data ? $data->count() : null,
+                    'per_page' => $data ? $data->perPage() : null,
+                    'currentPage' => $data ? $data->currentPage() : null,
+                    'totalPage' => $data ? $data->lastPage() : null
                 ],
                'response_column' => $column,
                'response_filterable' => $filterable,

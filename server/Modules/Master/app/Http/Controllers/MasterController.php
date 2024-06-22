@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Modules\Master\Models\MNilaiTabs;
 
 class MasterController extends Controller
 {
     protected $controller;
-    public function __construct(Controller $controller) {
+    protected $mNilaiTabs;
+    public function __construct(Controller $controller, MNilaiTabs $mNilaiTabs ) {
         $this->controller = $controller;
+        $this->mNilaiTabs = $mNilaiTabs;
     }
     /**
      * Display a listing of the resource.
@@ -67,5 +70,9 @@ class MasterController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function nilai(){
+        return $this->controller->respons('NILAI ALL', $this->mNilaiTabs->all());
     }
 }

@@ -5,6 +5,8 @@ namespace Modules\Finance\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Finance\Database\factories\TKrsTagihanTabsFactory;
+use Modules\Krs\Models\TKrsTab;
+use Modules\Master\Models\MStatusTab;
 
 class TKrsTagihanTabs extends Model
 {
@@ -16,8 +18,18 @@ class TKrsTagihanTabs extends Model
     protected $fillable = [
         't_krs_tabs_id',
         'payment',
-        'validation',
+        'keterangan',
+        'm_status_tabs_id',
+        'code',
     ];
+
+    public function status(){
+        return $this->hasOne(MStatusTab::class,'id', 'm_status_tabs_id');
+    }
+
+    public function krs(){
+        return $this->hasOne(TKrsTab::class,'id', 't_krs_tabs_id');
+    }
     
     protected static function newFactory()
     {

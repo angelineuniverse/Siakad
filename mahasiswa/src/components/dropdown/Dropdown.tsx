@@ -25,6 +25,7 @@ class Dropdown extends Component<ModelDropdown> {
       <div>
         <div className={clsx(" w-fit relative")}>
           <div
+            aria-hidden="true"
             onClick={() =>
               this.setState((prevState: Readonly<{ show: boolean }>) => ({
                 show: !prevState["show"],

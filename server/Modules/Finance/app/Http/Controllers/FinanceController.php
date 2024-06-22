@@ -7,11 +7,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Modules\Finance\Models\TKrsTagihanTabs;
 use Modules\Krs\Models\TKrsMatakuliahTab;
 use Modules\Krs\Models\TKrsPeriodeTab;
 use Modules\Krs\Models\TKrsTab;
 use Modules\Mahasiswa\Models\TMahasiswaSemesterTab;
 use Modules\Mahasiswa\Models\TMahasiswaTab;
+use Modules\Master\Models\MCodeTab;
 
 class FinanceController extends Controller
 {
@@ -21,6 +23,7 @@ class FinanceController extends Controller
     protected $tKrsTab;
     protected $tKrsPeriodeTab;
     protected $tKrsMatakuliahTab;
+    protected $tKrsTagihanTabs;
     public function __construct(
         Controller $controller,
         TMahasiswaTab $tMahasiswaTab,
@@ -28,9 +31,11 @@ class FinanceController extends Controller
         TKrsTab $tKrsTab,
         TKrsPeriodeTab $tKrsPeriodeTab,
         TKrsMatakuliahTab $tKrsMatakuliahTab,
+        TKrsTagihanTabs $tKrsTagihanTabs,
     ) {
         $this->controller = $controller;
         $this->tKrsTab = $tKrsTab;
+        $this->tKrsTagihanTabs = $tKrsTagihanTabs;
         $this->tMahasiswaTab = $tMahasiswaTab;
         $this->tMahasiswaSemesterTab = $tMahasiswaSemesterTab;
         $this->tKrsPeriodeTab = $tKrsPeriodeTab;
@@ -70,9 +75,13 @@ class FinanceController extends Controller
                 ],
                 [ 'name' => 'Total SKS','key' => 'total_sks', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
                 [ 'name' => 'Tagihan','key' => 'tagihan', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
-                [ 'name' => 'Uang Masuk','key' => 'uang_masuk', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
+                [ 'name' => 'Uang Masuk','key' => 'uang_detail_sum', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
                 [ 'name' => 'Status','key' => 'status', 'type' => 'status' ],
-                [ 'type' => 'action', 'ability' => ['SHOW']]
+                [ 'name' => 'Action', 'type' => 'action_status', 'ability' => array(
+                    [ 'title' => 'Setujui', 'key' => 'setujui' ,'theme' => 'success', 'show_by' => 'm_status_tabs_id', 'show_value' => [1,10]],
+                    [ 'title' => 'Bekukan', 'key' => 'bekukan' ,'theme' => 'error', 'show_by' => 'm_status_tabs_id', 'show_value' => [6]],
+                    [ 'title' => 'Detail', 'key' => 'detail' ,'theme' => 'warning', 'show_by' => 'm_status_tabs_id', 'show_value' => [1,6,7,10]],
+                )],
             )
         );
     }
@@ -83,23 +92,10 @@ class FinanceController extends Controller
     public function create()
     {
         return $this->controller->respons(
-            'FORM CREATE',
+            'FORM BAYARAN',
             array(
-                [   'key' => 't_mahasiswa_tabs_id', 
-                    't_mahasiswa_tabs_id' => null,
-                    'type' => 'select-search',
-                    'label' => 'Nama Mahasiswa',
-                    'isRequired' => true,
-                    'list' => [
-                        'url' => '',
-                        'keyValue' => 'id',
-                        'keyoption' => 'name',
-                        'keyprefix' => 'nim'
-                    ]
-                ],
-                [ 'key' => 'nim', 'placeholder' => null, 'type' => 'text', 'label' => 'NIM', 'visible' => false, 'readonly' => true ],
-                [ 'key' => 'semester', 'placeholder' => null, 'type' => 'text', 'label' => 'Semester', 'visible' => false, 'readonly' => true ],
-                [ 'key' => 'periode_semester', 'placeholder' => null, 'type' => 'text', 'label' => 'Periode Semester', 'visible' => false, 'readonly' => true ],
+                [ 'key' => 'payment', 'payment' => null, 'type' => 'number', 'label' => 'Uang Masuk' ],
+                [ 'key' => 'keterangan', 'keterangan' => null, 'type' => 'text', 'label' => 'Keterangan' ],
             )
         );
     }
@@ -110,35 +106,18 @@ class FinanceController extends Controller
     public function store(Request $request)
     {
         $this->controller->validasi($request->all(),[
-            't_periode_tabs_id' => 'required',
+            'payment' => 'required',
+            't_krs_tabs_id' => 'required',
         ]);
 
         try {
             DB::beginTransaction();
-            $user = $request->form[0];
-            $periode = $this->tKrsPeriodeTab->find($request->t_periode_tabs_id);
-            $mahasiswa = $this->tMahasiswaTab->where('id',$user[$user['key']])->first();
-            $semesterMahasiswa = $this->tMahasiswaSemesterTab
-                ->where('t_mahasiswa_tabs_id', $mahasiswa->id)
-                ->where('active',1)
-                ->first();
-            $krs = $this->tKrsTab->create([
-                't_krs_periode_tabs_id' => $request->t_periode_tabs_id,
-                't_mahasiswa_tabs_id' => $mahasiswa->id,
-                't_mahasiswa_semester_tabs_id' => $semesterMahasiswa->id,
-                'm_status_tabs_id' => 1,
-                'active_date' => $periode->end
-            ]);
-            foreach ($request->matakuliah as $value) {
-                $this->tKrsMatakuliahTab->create([
-                    't_krs_tabs_id' => $krs->id,
-                    't_mata_kuliah_tabs_id' => $value['id'],
-                ]);
-            }
+            $request['code'] = MCodeTab::generateCode('PMT');
+            $this->tKrsTagihanTabs->create($request->all());
             DB::commit();
-            return $this->controller->respons("CREATED", "KRS baru berhasil ditambahkan", [
-                'title' => "KRS baru berhasil ditambahkan",
-                'body' => 'Data KRS yang anda buat berhasil di tambahkan ke system',
+            return $this->controller->respons("UPDATED", "Pembayaran baru berhasil di tambahkan", [
+                'title' => "Pembayaran baru berhasil di tambahkan",
+                'body' => 'Data pembayaran berhasil di perbaharui di system',
                 'theme' => 'success'
             ]);
         } catch (\Throwable $th) {
@@ -152,7 +131,21 @@ class FinanceController extends Controller
      */
     public function show($id)
     {
-        return $this->controller->respons('USER DETAIL', auth()->user());
+        return $this->controller->responsList(
+            'RIWAYAT BAYAR',
+            $this->tKrsTagihanTabs->where('t_krs_tabs_id', $id)->with('status')->orderBy('m_status_tabs_id','asc')->orderBy('id','desc')->paginate(10),
+            array(
+                [ 'name' => 'Code Bayar','key' => 'code', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
+                [ 'name' => 'Uang Masuk','key' => 'payment', 'type' => 'currency', 'className' => 'text-xs' ],
+                [ 'name' => 'Tanggal','key' => 'created_at', 'type' => 'datetime', 'className' => 'text-xs' ],
+                [ 'name' => 'Keterangan','key' => 'keterangan', 'type' => 'string', 'className' => 'text-xs' ],
+                [ 'name' => 'Status','key' => 'status', 'type' => 'status' ],
+                [ 'name' => 'Action', 'type' => 'action_status', 'ability' => array(
+                    [ 'title' => 'Pulihkan', 'key' => 'valid' ,'theme' => 'success', 'show_by' => 'm_status_tabs_id', 'show_value' => [9]],
+                    [ 'title' => 'Batalkan', 'key' => 'not_valid' ,'theme' => 'error', 'show_by' => 'm_status_tabs_id', 'show_value' => [8]],
+                )],
+            )
+        );
     }
 
     /**
@@ -174,35 +167,15 @@ class FinanceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->controller->validasi($request->all(),[
-            'tagihan' => 'required',
-        ]);
-
         try {
             DB::beginTransaction();
-            foreach ($request->tagihan as $value) {
-                if($value[$value['key']] == 0) {
-                    return $this->controller->respons("UPDATED", "Tagihan gagal di update", [
-                        'title' => "Informasi Tagihan gagal diubah",
-                        'body' => 'Data Tagihan gagal di perbaharui di system karena nilainya 0',
-                        'theme' => 'error'
-                    ]);
-                }
-                $this->tKrsTab->where('id',$id)->update([
-                    'tagihan' => $value[$value['key']]
-                ]);
-            }
-            // $this->tKrsMatakuliahTab->where('t_krs_tabs_id', $request->t_krs_tabs_id)->delete();
-            // foreach ($request->matakuliah as $value) {
-            //     $this->tKrsMatakuliahTab->create([
-            //         't_krs_tabs_id' => $request->t_krs_tabs_id,
-            //         't_mata_kuliah_tabs_id' => $value['id'],
-            //     ]);
-            // }
+            $this->tKrsTagihanTabs->where('id',$id)->update([
+               'm_status_tabs_id' => $request->m_status_tabs_id === 8 ? 9 : 8
+            ]);
             DB::commit();
-            return $this->controller->respons("UPDATED", "Tagihan gagal berhasil di update", [
-                'title' => "Informasi Tagihan gagal berhasil diubah",
-                'body' => 'Data Tagihan gagal berhasil di perbaharui di system',
+            return $this->controller->respons("UPDATED", "Status Pembayaran berhasil di ubah", [
+                'title' => "Status Pembayaran berhasil di ubah",
+                'body' => 'Status pembayaran berhasil di perbaharui di system',
                 'theme' => 'success'
             ]);
         } catch (\Throwable $th) {
@@ -216,6 +189,113 @@ class FinanceController extends Controller
      */
     public function destroy($id)
     {
-        // ...
+        try {
+            DB::beginTransaction();
+            $this->tKrsTagihanTabs->where('t_krs_tabs_id',$id)->update([
+                'm_status_tabs_id' => 9
+            ]);
+            DB::commit();
+            return $this->controller->respons("DELETED", "Tagihan berhasil di update", [
+                'title' => "Riwayat Tagihan berhasil di batalkan",
+                'body' => 'Data Riwayat Tagihan anda batalkan berhasil di udah pada system',
+                'theme' => 'success'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
+    }
+
+    public function updateTagihan(Request $request){
+        try {
+            DB::beginTransaction();
+            $this->tKrsTab->where('id',$request->id)->update([
+                'tagihan' => $request->tagihan
+            ]);
+            DB::commit();
+            return $this->controller->respons("UPDATED", "Tagihan berhasil di update", [
+                'title' => "Tagihan berhasil di update",
+                'body' => 'Data Tagihan anda berhasil di update pada system',
+                'theme' =>'success'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(400, $th->getMessage());
+        }
+    }
+
+    public function detailTagihan(Request $request){
+        $krsTabs = $this->tKrsTab->find($request->id);
+        $krsTagihan = $this->tKrsTagihanTabs->where('t_krs_tabs_id', $krsTabs->id)->where('m_status_tabs_id',8)->get();
+        $payment = $krsTabs->tagihan - $krsTagihan->sum('payment');
+        return $this->controller->respons("DETAIL TAGIHAN", [
+            'status' => $payment < 0 ? 2 : ($payment === 0 ? 1 : 0),
+            'tagihan' => $payment,
+        ]);
+    }
+
+    public function menunggak(){
+        $krstab = $this->tKrsTab->menunggak()->get();
+        $arrays = array();
+        foreach ($krstab as $value) {
+            if($value->tagihan > (int) $value->uang_detail_sum || $value->m_status_tabs_id == 10 ) {
+                array_push($arrays, $value);
+            }
+        }
+        return $this->controller->respons("MENUNGGAK", $arrays);
+    }
+
+    public function infobayaran(){
+        $semesterActive = $this->tMahasiswaSemesterTab
+            ->where('t_mahasiswa_tabs_id', auth()->user()->id)
+            ->where('active',1)
+            ->with('semester')
+            ->first();
+        $krsmahasiswa = $this->tKrsTab
+            ->where('t_mahasiswa_tabs_id', auth()->user()->id)
+            ->where('t_mahasiswa_semester_tabs_id', $semesterActive->id)
+            ->with('periode')
+            ->first();
+        if(isset($krsmahasiswa)) {
+            $krsTagihan = $this->tKrsTagihanTabs->where('t_krs_tabs_id', $krsmahasiswa->id)
+                ->where('m_status_tabs_id',8)->get();
+            $payment = $krsmahasiswa->tagihan - $krsTagihan->sum('payment');
+            return $this->controller->respons("INFO BAYARAN", [
+                "sisa" => $payment,
+                "semester" => $semesterActive,
+                "periode" => $krsmahasiswa,
+                "payment" => $krsTagihan->sum('payment'),
+                "default" => $krsmahasiswa->tagihan,
+            ]);
+        } else {
+            return $this->controller->respons("INFO BAYARAN", [
+                "sisa" => 0,
+                "payment" => 0,
+                "default" => 0,
+            ]);
+        }
+    }
+
+    public function riwayatBayaran(){
+        $tagihan = $this->tKrsTagihanTabs->with(['krs' => function($a){
+            $a->with(['status','semester_mahasiswa' => function($a){
+                $a->with(['semester']);
+            }]);
+        },'status'])->whereHas('krs', function($a){
+            $a->where('t_mahasiswa_tabs_id', auth()->user()->id);
+        })->paginate(20);
+        
+        return $this->controller->responsList(
+            'RIWAYAT BAYAR',
+            $tagihan,
+            array(
+                [ 'name' => 'Code Bayar','key' => 'code', 'type' => 'string', 'className' => 'font-interbold text-xs' ],
+                [ 'name' => 'Semester','key' => 'krs.semester_mahasiswa.semester.title', 'type' => 'string', 'className' => 'text-xs' ],
+                [ 'name' => 'Uang Masuk','key' => 'payment', 'type' => 'currency', 'className' => 'text-xs' ],
+                [ 'name' => 'Tanggal','key' => 'created_at', 'type' => 'datetime', 'className' => 'text-xs' ],
+                [ 'name' => 'Keterangan','key' => 'keterangan', 'type' => 'string', 'className' => 'text-xs' ],
+                [ 'name' => 'Status','key' => 'status', 'type' => 'status', ],
+            )
+        );
     }
 }

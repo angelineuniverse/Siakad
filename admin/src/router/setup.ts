@@ -25,6 +25,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
+                path: '',
                 async lazy() {
                     let Dashboard = await import('../layout/dashboard/index');
                     return { Component: Dashboard.default}
@@ -177,8 +178,28 @@ const router = createBrowserRouter([
                                     return { Component: Krs.default}
                                 },
                             },
+                            {
+                                path: ':periodeId?/studi/:id/:mahasiswaId?',
+                                async lazy() {
+                                    let Krs = await import('../layout/akademik/krs/studi');
+                                    return { Component: Krs.default}
+                                },
+                            },
                         ]
                     },
+                    {
+                        path: "transkip",
+                        children: [
+                            {
+                                index: true,
+                                path: '',
+                                async lazy() {
+                                    let Index = await import('../layout/akademik/transkip/index');
+                                    return { Component: Index.default}
+                                },
+                            },
+                        ]
+                    }
                 ]
             },
             {
@@ -207,7 +228,8 @@ const router = createBrowserRouter([
                         },
                     },
                 ]
-            }
+            },
+            
         ]
     }
 ]);

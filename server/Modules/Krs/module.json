@@ -1,0 +1,11 @@
+{
+    "name": "Krs",
+    "alias": "krs",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Krs\\Providers\\KrsServiceProvider"
+    ],
+    "files": []
+}

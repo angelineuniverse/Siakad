@@ -1,0 +1,66 @@
+[
+  {
+    "label": "Dashboard",
+    "url": "/dashboard",
+    "icon": "home",
+    "role": [1],
+    "parent": false,
+    "child": null,
+    "dropdown": false
+  },
+  {
+    "label": "Finance",
+    "url": "/finance",
+    "icon": "home",
+    "role": [1],
+    "parent": false,
+    "child": null,
+    "dropdown": false
+  },
+  {
+    "label": "Perkuliahan",
+    "url": "/perkuliahan",
+    "icon": "home",
+    "role": [1],
+    "parent": false,
+    "child": null,
+    "dropdown": false
+  },
+  {
+    "label": "Management",
+    "url": "/master",
+    "icon": "home",
+    "role": [1],
+    "parent": false,
+    "child": null,
+    "dropdown": false
+  },
+  {
+    "label": "Master",
+    "url": "/master",
+    "icon": "home",
+    "role": [1],
+    "parent": true,
+    "dropdown": true,
+    "child": [
+      {
+        "label": "Jurusan",
+        "url": "/jurusan",
+        "icon": "home",
+        "role": [1, 2],
+        "parent": false,
+        "child": null,
+        "dropdown": false
+      },
+      {
+        "label": "Mata Kuliah",
+        "url": "/jurusan",
+        "icon": "home",
+        "role": [1, 2],
+        "parent": false,
+        "child": null,
+        "dropdown": false
+      }
+    ]
+  }
+]

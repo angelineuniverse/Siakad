@@ -14,6 +14,3 @@ use Modules\Master\Http\Controllers\MasterController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('master', MasterController::class)->names('master');
-});

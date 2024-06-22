@@ -13,10 +13,26 @@ class TMahasiswaDetailTab extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    public $timestamps = false;
+    protected $fillable = [
+        't_mahasiswa_tabs_id',
+        'old_school',
+        'birthday_city',
+        'birthday_date',
+        'no_kk',
+        'no_nik',
+        'phone',
+        'm_gender_tabs_id',
+        'm_blood_tabs_id',
+        'm_married_tabs_id',
+        'm_religion_tabs_id',
+        'm_city_tabs_id',
+        'm_province_tabs_id',
+        'address',
+    ];
     
-    protected static function newFactory(): TMahasiswaDetailTabFactory
+    protected static function newFactory()
     {
-        //return TMahasiswaDetailTabFactory::new();
+        // Create a new
     }
 }
